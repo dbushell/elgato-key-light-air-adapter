@@ -1,4 +1,17 @@
-# example-adapter
+## Elgato Key Light Air Adapter
+
+This is a very early prototype based on the example adapter.
+
+Todo:
+
+- [x] On/off property (test device)
+- [ ] Brightness property (test device)
+- [ ] Temperature property (test device)
+- [ ] Test device IP address (remove hard-coded)
+- [ ] Multiple device pairing / discovery
+- [ ] Production package / readme / contributors
+
+## example-adapter
 
 This is a super basic and simple example of an adapter add-on for the WebThings
 Gateway.

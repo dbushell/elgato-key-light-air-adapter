@@ -1,43 +1,45 @@
 {
-  "name": "example-adapter",
-  "display_name": "Example Adapter",
+  "name": "elgato-key-light-air-adapter",
+  "display_name": "Elgato Key Light Air Adapter",
   "version": "0.6.2",
-  "description": "Example adapter add-on for Mozilla WebThings Gateway",
+  "description": "Elgato Key Light Air adapter for Mozilla WebThings Gateway",
   "author": "Mozilla IoT",
+  "contributors": [
+    "Mozilla IoT",
+    {
+      "name": "David Bushell",
+      "email": "hi@dbushell.com",
+      "url": "https://dbushell.com/"
+    }
+  ],
   "main": "index.js",
-  "scripts": {
-    "lint": "eslint ."
-  },
+  "scripts": {},
   "keywords": [
     "mozilla",
     "iot",
     "adapter",
-    "example"
+    "example",
+    "elgato",
+    "key light",
+    "key light air"
   ],
-  "homepage": "https://github.com/mozilla-iot/example-adapter",
+  "homepage": "https://github.com/dbushell/elgato-key-light-air-adapter",
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mozilla-iot/example-adapter.git"
+    "url": "https://github.com/dbushell/elgato-key-light-air-adapter.git"
   },
   "bugs": {
-    "url": "https://github.com/mozilla-iot/example-adapter/issues"
+    "url": "https://github.com/dbushell/elgato-key-light-air-adapter/issues"
   },
-  "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.8.0"
-  },
+  "devDependencies": {},
   "files": [
     "LICENSE",
     "README.md",
     "SHA256SUMS",
-    "css",
-    "example-adapter.js",
-    "example-api-handler.js",
+    "elgato-key-light-air-adapter.js",
     "index.js",
-    "js",
-    "manifest.json",
-    "views"
+    "manifest.json"
   ],
   "moziot": {
     "api": {

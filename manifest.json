@@ -1,16 +1,6 @@
 {
   "author": "Mozilla IoT",
-  "content_scripts": [
-    {
-      "css": [
-        "css/extension.css"
-      ],
-      "js": [
-        "js/extension.js"
-      ]
-    }
-  ],
-  "description": "Example adapter add-on for Mozilla WebThings Gateway",
+  "description": "Elgato Key Light Air adapter for Mozilla WebThings Gateway",
   "gateway_specific_settings": {
     "webthings": {
       "exec": "{nodeLoader} {path}",
@@ -19,16 +9,11 @@
       "strict_min_version": "0.10.0"
     }
   },
-  "homepage_url": "https://github.com/mozilla-iot/example-adapter",
-  "id": "example-adapter",
+  "homepage_url": "https://github.com/dbushell/elgato-key-light-air-adapter",
+  "id": "elgato-key-light-air-adapter",
   "license": "MPL-2.0",
   "manifest_version": 1,
-  "name": "Example Adapter",
-  "short_name": "Example",
-  "version": "0.6.2",
-  "web_accessible_resources": [
-    "css/*.css",
-    "js/*.js",
-    "views/*.html"
-  ]
+  "name": "Elgato Key Light Air Adapter",
+  "short_name": "Elgato Key Light Air",
+  "version": "0.6.3"
 }

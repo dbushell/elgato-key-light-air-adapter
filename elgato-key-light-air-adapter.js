@@ -1,5 +1,5 @@
 /**
- * example-adapter.js - Example adapter.
+ * key-light-air-adapter.js
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,23 +8,13 @@
 
 'use strict';
 
-const {
-  Adapter,
-  Device,
-  Property,
-} = require('gateway-addon');
+const http = require('http');
 
-let ExampleAPIHandler = null;
-try {
-  ExampleAPIHandler = require('./example-api-handler');
-} catch (e) {
-  console.log(`API Handler unavailable: ${e}`);
-  // pass
-}
+const {Adapter, Device, Property} = require('gateway-addon');
 
 const manifest = require('./manifest.json');
 
-class ExampleProperty extends Property {
+class KeyLightAirProperty extends Property {
   constructor(device, name, propertyDescription) {
     super(device, name, propertyDescription);
     this.setCachedValue(propertyDescription.value);
@@ -42,17 +32,41 @@ class ExampleProperty extends Property {
    */
   setValue(value) {
     return new Promise((resolve, reject) => {
-      super.setValue(value).then((updatedValue) => {
-        resolve(updatedValue);
-        this.device.notifyPropertyChanged(this);
-      }).catch((err) => {
-        reject(err);
-      });
+      super
+        .setValue(value)
+        .then((updatedValue) => {
+          const testPayload = JSON.stringify({
+            lights: [{brightness: 10, temperature: 222, on: value ? 1 : 0}],
+            numberOfLights: 1
+          });
+          const testOptions = {
+            host: 'elgato-key-light-air-90de.local',
+            path: '/elgato/lights',
+            port: 9123,
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': testPayload.length
+            }
+          };
+          console.log(testPayload);
+          http
+            .request(testOptions, (res) => {
+              console.log(`STATUS: ${res.statusCode}`);
+              console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+              resolve(updatedValue);
+              this.device.notifyPropertyChanged(this);
+            })
+            .write(testPayload);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   }
 }
 
-class ExampleDevice extends Device {
+class KeyLightAirDevice extends Device {
   constructor(adapter, id, deviceDescription) {
     super(adapter, id);
     this.name = deviceDescription.name;
@@ -61,48 +75,38 @@ class ExampleDevice extends Device {
     this.description = deviceDescription.description;
     for (const propertyName in deviceDescription.properties) {
       const propertyDescription = deviceDescription.properties[propertyName];
-      const property = new ExampleProperty(this, propertyName,
-                                           propertyDescription);
+      const property = new KeyLightAirProperty(
+        this,
+        propertyName,
+        propertyDescription
+      );
       this.properties.set(propertyName, property);
-    }
-
-    if (ExampleAPIHandler) {
-      this.links.push({
-        rel: 'alternate',
-        mediaType: 'text/html',
-        // eslint-disable-next-line max-len
-        href: `/extensions/example-adapter?thingId=${encodeURIComponent(this.id)}`,
-      });
     }
   }
 }
 
-class ExampleAdapter extends Adapter {
+class KeyLightAdapter extends Adapter {
   constructor(addonManager) {
-    super(addonManager, 'ExampleAdapter', manifest.id);
+    super(addonManager, 'KeyLightAdapter', manifest.id);
     addonManager.addAdapter(this);
 
-    if (!this.devices['example-plug']) {
-      const device = new ExampleDevice(this, 'example-plug', {
-        name: 'Example Plug',
-        '@type': ['OnOffSwitch', 'SmartPlug'],
-        description: 'Example Device',
+    if (!this.devices['key-light-air']) {
+      const device = new KeyLightAirDevice(this, 'key-light-air', {
+        name: 'Key Light Air',
+        '@type': ['OnOffSwitch', 'Light'],
+        description: 'Elgato Key Light Air',
         properties: {
           on: {
             '@type': 'OnOffProperty',
             label: 'On/Off',
             name: 'on',
             type: 'boolean',
-            value: false,
-          },
-        },
+            value: false
+          }
+        }
       });
 
       this.handleDeviceAdded(device);
-    }
-
-    if (ExampleAPIHandler) {
-      this.apiHandler = new ExampleAPIHandler(addonManager, this);
     }
   }
 
@@ -120,7 +124,7 @@ class ExampleAdapter extends Adapter {
       if (deviceId in this.devices) {
         reject(`Device: ${deviceId} already exists.`);
       } else {
-        const device = new ExampleDevice(this, deviceId, deviceDescription);
+        const device = new KeyLightAirDevice(this, deviceId, deviceDescription);
         this.handleDeviceAdded(device);
         resolve(device);
       }
@@ -153,16 +157,26 @@ class ExampleAdapter extends Adapter {
    * @param {Number} timeoutSeconds Number of seconds to run before timeout
    */
   startPairing(_timeoutSeconds) {
-    console.log('ExampleAdapter:', this.name,
-                'id', this.id, 'pairing started');
+    console.log(
+      'KeyLightAdapter:',
+      this.name,
+      'id',
+      this.id,
+      'pairing started'
+    );
   }
 
   /**
    * Cancel the pairing/discovery process.
    */
   cancelPairing() {
-    console.log('ExampleAdapter:', this.name, 'id', this.id,
-                'pairing cancelled');
+    console.log(
+      'KeyLightAdapter:',
+      this.name,
+      'id',
+      this.id,
+      'pairing cancelled'
+    );
   }
 
   /**
@@ -171,15 +185,24 @@ class ExampleAdapter extends Adapter {
    * @param {Object} device Device to unpair with
    */
   removeThing(device) {
-    console.log('ExampleAdapter:', this.name, 'id', this.id,
-                'removeThing(', device.id, ') started');
+    console.log(
+      'KeyLightAdapter:',
+      this.name,
+      'id',
+      this.id,
+      'removeThing(',
+      device.id,
+      ') started'
+    );
 
-    this.removeDevice(device.id).then(() => {
-      console.log('ExampleAdapter: device:', device.id, 'was unpaired.');
-    }).catch((err) => {
-      console.error('ExampleAdapter: unpairing', device.id, 'failed');
-      console.error(err);
-    });
+    this.removeDevice(device.id)
+      .then(() => {
+        console.log('KeyLightAdapter: device:', device.id, 'was unpaired.');
+      })
+      .catch((err) => {
+        console.error('KeyLightAdapter: unpairing', device.id, 'failed');
+        console.error(err);
+      });
   }
 
   /**
@@ -188,9 +211,16 @@ class ExampleAdapter extends Adapter {
    * @param {Object} device Device that is currently being paired
    */
   cancelRemoveThing(device) {
-    console.log('ExampleAdapter:', this.name, 'id', this.id,
-                'cancelRemoveThing(', device.id, ')');
+    console.log(
+      'KeyLightAdapter:',
+      this.name,
+      'id',
+      this.id,
+      'cancelRemoveThing(',
+      device.id,
+      ')'
+    );
   }
 }
 
-module.exports = ExampleAdapter;
+module.exports = KeyLightAdapter;
