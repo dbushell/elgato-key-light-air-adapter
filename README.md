@@ -5,9 +5,10 @@ This is a very early prototype based on the example adapter.
 Todo:
 
 - [x] On/off property (test device)
-- [ ] Brightness property (test device)
-- [ ] Temperature property (test device)
-- [ ] Test device IP address (remove hard-coded)
+- [x] Brightness property (test device)
+- [x] Temperature property (test device)
+- [ ] Poll devices to keep track of state
+- [ ] Throttle requests based on light settings
 - [ ] Multiple device pairing / discovery
 - [ ] Production package / readme / contributors
 

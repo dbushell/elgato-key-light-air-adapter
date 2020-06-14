@@ -1,7 +1,7 @@
 {
   "name": "elgato-key-light-air-adapter",
   "display_name": "Elgato Key Light Air Adapter",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Elgato Key Light Air adapter for Mozilla WebThings Gateway",
   "author": "Mozilla IoT",
   "contributors": [

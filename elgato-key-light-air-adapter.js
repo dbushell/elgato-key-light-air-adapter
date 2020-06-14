@@ -35,8 +35,19 @@ class KeyLightAirProperty extends Property {
       super
         .setValue(value)
         .then((updatedValue) => {
+          const {minimum, maximum} = this.device.properties.get('temperature');
+          let temperature = this.device.properties.get('temperature').value;
+          // Convert to a percentage
+          temperature = (temperature - minimum) / (maximum - minimum);
+          // Inverse between whatever these numbers mean
+          temperature = Math.round((344 - 143) * (1 - temperature) + 143);
+          const lightProps = {
+            temperature,
+            brightness: this.device.properties.get('brightness').value,
+            on: this.device.properties.get('on').value ? 1 : 0
+          };
           const testPayload = JSON.stringify({
-            lights: [{brightness: 10, temperature: 222, on: value ? 1 : 0}],
+            lights: [lightProps],
             numberOfLights: 1
           });
           const testOptions = {
@@ -49,11 +60,13 @@ class KeyLightAirProperty extends Property {
               'Content-Length': testPayload.length
             }
           };
-          console.log(testPayload);
           http
             .request(testOptions, (res) => {
-              console.log(`STATUS: ${res.statusCode}`);
-              console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+              console.log(testPayload);
+              // console.log(`STATUS: ${res.statusCode}`);
+              // res.on('data', (chunk) => {
+              //     console.log(`BODY: ${chunk}`);
+              //   });
               resolve(updatedValue);
               this.device.notifyPropertyChanged(this);
             })
@@ -93,15 +106,37 @@ class KeyLightAdapter extends Adapter {
     if (!this.devices['key-light-air']) {
       const device = new KeyLightAirDevice(this, 'key-light-air', {
         name: 'Key Light Air',
+        // https://iot.mozilla.org/schemas/#Light
         '@type': ['OnOffSwitch', 'Light'],
         description: 'Elgato Key Light Air',
         properties: {
+          // https://iot.mozilla.org/schemas/#OnOffProperty
           on: {
             '@type': 'OnOffProperty',
             label: 'On/Off',
             name: 'on',
             type: 'boolean',
             value: false
+          },
+          // https://iot.mozilla.org/schemas/#BrightnessProperty
+          brightness: {
+            '@type': 'BrightnessProperty',
+            label: 'Brightness',
+            name: 'brightness',
+            type: 'integer',
+            value: 50,
+            minimum: 3,
+            maximum: 100
+          },
+          // https://iot.mozilla.org/schemas/#ColorTemperatureProperty
+          temperature: {
+            '@type': 'ColorTemperatureProperty',
+            label: 'Temperature',
+            name: 'temperature',
+            type: 'integer',
+            value: 4950,
+            minimum: 2900,
+            maximum: 7000
           }
         }
       });
