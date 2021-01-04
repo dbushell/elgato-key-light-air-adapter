@@ -1,5 +1,11 @@
 ## Elgato Key Light Air Adapter
 
+## Update 2021
+
+Due to recent Mozilla changes and uncertainty around WebThings I've moved over to [Home Assistant](https://www.home-assistant.io/) which has full support for the key light. I've put this project in archive mode in case it's useful for others.
+
+## README
+
 This is a very early prototype based on the example adapter.
 
 Todo:
